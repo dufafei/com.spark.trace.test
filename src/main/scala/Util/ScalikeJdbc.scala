@@ -2,12 +2,9 @@ package Util
 
 
 
-import java.io.{ByteArrayInputStream, StringReader}
+import java.io.ByteArrayInputStream
 import java.sql.PreparedStatement
-
-import Init.connMysql
 import main.scala.Sources.dataFromLocal
-import scalikejdbc.DB
 /**
   * Created by 小灰灰 on 2017/9/25.
   */
@@ -35,6 +32,11 @@ object ScalikeJdbc extends PsqlConn{
       sql"insert into test (time,user,install) values ($bytesBinder)".update.apply()
     })
   }
+  /**
+    *DB localTx { implicit session =>
+    *  sql"insert into user (id, name, age) values (?, ?, ?)".batch(batchInsertParams: _*).apply()
+    * }
+    * */
   def main(args: Array[String]): Unit = {
 
 
