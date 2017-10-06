@@ -2,7 +2,7 @@ package Start
 
 import Handle.BaseDataTrace
 import Sources.dataFromTrace
-import Util.{CopyToTable, ToMysql, casePath}
+import Util.{ToMysql, casePath}
 import org.apache.spark.rdd.RDD
 
 object productStart {

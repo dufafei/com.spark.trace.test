@@ -30,7 +30,8 @@ object streaming {
 
     def batchSave(rdd: RDD[String]):Unit = {
 
-      rdd.map(x => {
+      rdd.foreach(println)
+     /* rdd.map(x => {
         val tracelog=Tracelog(x).get
         BaseInfo(tracelog)
       }).map(x => x.basePar)
@@ -40,7 +41,7 @@ object streaming {
         .map(x => {
             (x._1.trackid,x._1.productID,x._1.servertime,x._2).toString()
           })
-        .collect().foreach(println)
+        .collect().foreach(println)*/
 
     }
     new DirectStream().createDirectStream(ssc, KafkaProperties.kafkaParmter, topic, batchSave)
