@@ -90,16 +90,22 @@ class DirectStream() extends  Serializable{
              |$topic/$partition
              |的Offset ...
            """.stripMargin)
-        val utiloffset:String=zkClient.readData[String](zkPath)
+        val utilOffset:String=zkClient.readData[String](zkPath)
         //保存topic,partition到对象TopicAndPartition中
         val tp=TopicAndPartition(topic,partition)
+        val kafkaOffset=getMinOffset(zkClient,tp,groupId)
         //获取每个partition的offset
         val offset= try {
-          if (utiloffset.equals(null) || utiloffset.equals(""))
-            getMaxOffset(zkClient,tp,groupId)
-          else utiloffset.toLong
+          if (utilOffset.equals(null) || utilOffset.equals(""))
+            kafkaOffset
+          else if(utilOffset.toLong < getMinOffset(zkClient,tp,groupId)){
+             logger.info("zookerper信息过期，需要从kafka重新读取...")
+             kafkaOffset
+          }else {
+            utilOffset.toLong
+          }
         } catch {
-          case e:Exception => getMaxOffset(zkClient,tp,groupId)
+          case e:Exception => getMinOffset(zkClient,tp,groupId)
         }
         //将不同 partition 对应的 offset 增加到 fromOffsets 中
         fromOffsets +=(tp->offset)
@@ -110,15 +116,15 @@ class DirectStream() extends  Serializable{
   }
   /*
    *当第一次启动spark任务或者zookeeper上的数据被删除或设置出错时，
-   * 将选取kafak最大的offset开始消费，
+   * 将选取kafak最小的offset开始消费
    *
    * */
-  def getMaxOffset(zkClient: ZkClient,
+  def getMinOffset(zkClient: ZkClient,
                     tp:TopicAndPartition,
                     groupId:String): Long ={
     //time: Long, maxNumOffsets: Int
     //EarliestTime从头取，LatestTime从最后取
-    val request=OffsetRequest(immutable.Map(tp -> PartitionOffsetRequestInfo(OffsetRequest.LatestTime,1)))
+    val request=OffsetRequest(immutable.Map(tp -> PartitionOffsetRequestInfo(OffsetRequest.EarliestTime,1)))
     /* 从 kafka 上获取 offset 的时候，需要寻找对应的 leader，
       从 leader 来获取 offset，而不是 broker，不然可能得到的 curOffsets 会是空的（表示获取不到),,
       获取到leader partition 所在的broker id*/
@@ -143,8 +149,7 @@ class DirectStream() extends  Serializable{
                 .partitionErrorAndOffsets(tp)
                 .offsets
                 .head
-              //构造请求获取consumer端最新的offset
-                logger.info(s"从kafka上获取offset:$offset")
+              //构造请求获取consumer端的offset
                 offset
             }
             case None => throw new BrokerNotAvailableException("Broker id %d does not exist".format(brokerId))
