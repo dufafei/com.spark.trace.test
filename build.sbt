@@ -19,7 +19,8 @@ libraryDependencies ++= Seq(
    "org.scalikejdbc" %% "scalikejdbc" % "2.4.1",
    "org.scalikejdbc" %% "scalikejdbc-config" % "2.4.1",
    "joda-time" % "joda-time" % "2.9.3" % "provided",
-   "org.joda" % "joda-convert" % "1.8.1" % "provided"
+   "org.joda" % "joda-convert" % "1.8.1" % "provided",
+   "org.elasticsearch" % "elasticsearch-spark_2.10" % "2.4.4"
     )map( _.excludeAll(ExclusionRule(organization = "org.mortbay.jetty")) )
 
 packAutoSettings
