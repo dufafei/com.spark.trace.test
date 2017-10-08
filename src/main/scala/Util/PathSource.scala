@@ -8,9 +8,7 @@ import org.apache.spark.SparkContext
 
 
  class  LogPath(path: casePath,sc: SparkContext) extends Serializable{
-
    val logpath: String = getPath.mkString(",")
-
    def getPath: IndexedSeq[String] = {
    val startTime: DateTime = DateTime.parse(path.startTime,DateTimeFormat.forPattern("yyyyMMdd"))
    val endTime: DateTime = startTime.plusDays(path.interval)
@@ -20,12 +18,10 @@ import org.apache.spark.SparkContext
     }).map(b => makePath(b._1,b._2))
        .filter(c => FileSystem.get(sc.hadoopConfiguration).exists(new Path(c)))
    }
-
    def makePath(rootDire: String, secondDire: String): String = {
    Seq(rootDire,secondDire)
      .mkString("/")
    }
-
    /*//File.separator是系统默认的文件分割符号，屏蔽了这些系统的区别 == /
 
    def isExists(rootDire: String,secondDire:String):Boolean ={
@@ -33,7 +29,6 @@ import org.apache.spark.SparkContext
    if(file.exists() && file.isFile) true
    else false
    }*/
-
  }
 
 

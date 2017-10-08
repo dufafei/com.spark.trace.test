@@ -3,7 +3,7 @@ package Util
 import java.sql.Connection
 
 import Init.Pattern
-import scalikejdbc.{ConnectionPool, ConnectionPoolSettings, DB}
+import scalikejdbc.{ConnectionPool, ConnectionPoolSettings}
 
 /**
   * Created by 小灰灰 on 2017/9/25.

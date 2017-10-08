@@ -1,20 +1,28 @@
 package Util
 
+import redis.clients.jedis.{JedisPool, JedisPoolConfig}
+
 /**
   * Created by 小灰灰 on 2017/9/24.
   */
 object RedisClient {
 
-  /*val redisHost = "10.10.4.130"
-  val redisPort = 6379
-  val redisTimeout = 30000
-  lazy val pool = new JedisPool(new GenericObjectPoolConfig(), redisHost, redisPort, redisTimeout)
+  def main(args: Array[String]): Unit = {
 
-  lazy val hook = new Thread {
-    override def run = {
-      println("Execute hook thread: " + this)
-      pool.destroy()
-    }
+   val config= new JedisPoolConfig
+    config.setMaxTotal(3)
+    config.setMaxIdle(10)
+   val host= "192.168.132.106"
+   val port= 6379
+   val jedispool= new JedisPool(config,host,port)
+   val client=jedispool.getResource
+   println(client.ping())
+    client.set("name","dufafei")
+    println(client.get("name"))
+    // 业务操作完成，将连接返回给连接池
+   if(client.isConnected)
+     jedispool.returnResource(client)
+    // 应用关闭时，释放连接池资源
+     jedispool.destroy()
   }
-  sys.addShutdownHook(hook.run)*/
 }
