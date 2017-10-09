@@ -5,6 +5,12 @@ import org.apache.hadoop.hbase._
 import org.apache.hadoop.hbase.client._
 import org.apache.log4j.{Level, Logger}
 /**
+  *
+  *为user实例定义一个简单模型对象
+  * 在一个类中封装所有Hbase访问方法
+  * 先声明普通使用的字节数组byte[]常量
+  * 然后定义封装操作命令的方法
+  * 接下来是user模型的公有接口和私有实现
   * Created by 小灰灰 on 2017/9/23.
   */
 object HbaseUtil extends Pattern{
@@ -31,7 +37,7 @@ object HbaseUtil extends Pattern{
     * @param tableName 表名称
     * @param familyName 列簇名称集合
     */
-  def createTable(tableName:String,familyName:Array[String]): Unit ={
+  def createTable(tableName:String,familyName:Array[String],partition:Int): Unit ={
    useAdmin(x=>{
      val table=TableName.valueOf(tableName)
      if(x.tableExists(table))
@@ -42,10 +48,25 @@ object HbaseUtil extends Pattern{
          val family=new HColumnDescriptor(familyName(x))
          tableDesc.addFamily(family)
        })
-       x.createTable(tableDesc)
+       x.createTable(tableDesc,getSplitKeys(partition))
+       println(s"创建表：${tableName}成功")
      }
    })
   }
+   //预分区
+  /**
+    *
+    * @param partition 分区个数
+    * @return rowkey临界值
+    */
+  def getSplitKeys(partition:Int) ={
+    val splitKeys=new Array[Array[Byte]](partition-1)
+    for(i <- 1 until partition){
+     splitKeys(i-1)=Array(i.toByte)
+    }
+       splitKeys
+  }
+
   def deleteTable(tableName: String): Unit ={
     useAdmin(x =>{
       val table=TableName.valueOf(tableName)
@@ -57,14 +78,7 @@ object HbaseUtil extends Pattern{
     })
   }
   //插入行-put
-  /**
-    *
-    * @param tableName
-    * @param rowKey
-    * @param familyName
-    * @param columnName
-    * @param value
-    */
+
   def insertLine(tableName:String,rowKey:String,familyName:String,columnName:String,value:String): Unit ={
     useTable(x=>{
       val toTable=TableName.valueOf(tableName)
@@ -82,15 +96,10 @@ object HbaseUtil extends Pattern{
   //插入表
   def insertTable(tableName:String,rowkey:String): Unit ={
 
-
   }
 
   //删除行-delete
-  /**
-    *
-    * @param tableName
-    * @param rowkeys
-    */
+
   def deleteLine(tableName:String,rowkeys:Array[String]): Unit ={
     useTable(x=> {
       val toTable=TableName.valueOf(tableName)
@@ -99,6 +108,7 @@ object HbaseUtil extends Pattern{
         val table=x.getTable(toTable)
         val deleteList=rowkeys.map(x=>{
           new Delete(x.getBytes(this.hbaseEncode))
+          //删除行的一部分，delete.deleteColumn
         }).toList
         import scala.collection.JavaConversions._
         table.delete(deleteList)
@@ -108,14 +118,6 @@ object HbaseUtil extends Pattern{
     })
   }
   //获取行-get
-  /**
-    *
-    * @param tableName
-    * @param rowkey
-    * @param familyName
-    * @param columnName
-    * @return
-    */
   def getLine(tableName:String,rowkey:String,familyName:String,columnName:String) ={
     useTable(x=>{
       val toTable=TableName.valueOf(tableName)
@@ -123,6 +125,12 @@ object HbaseUtil extends Pattern{
       if (flag){
         val table=x.getTable(toTable)
         val get=new Get(rowkey.getBytes(this.hbaseEncode))
+        //get.addColumn(("info").getBytes,"name".getBytes)
+        //get.addFamily("info".getBytes)
+         //val r=table.get(get)
+        //val b=r.getValue("info".getBytes,"name".getBytes)
+        //检索特定值，从字节换回字符串
+        //val p=b.toString
         val res=table.get(get)
         val cells=res.rawCells()//Array[cell]
         getRow(cells)
@@ -142,14 +150,10 @@ object HbaseUtil extends Pattern{
     })
   }
   //获取多行-scan
-  /**
-    *
-    * @param tableName
-    * @param startRow
-    * @param endRow
-    * @return
-    */
+
   def getLines(tableName:String,startRow:String,endRow:String) ={
+    //获得T开头的用户
+   //val scan=new Scan("T".getBytes,"u".getBytes)
     useTable(x=>{
       val toTable=TableName.valueOf(tableName)
       val flag=tableIsExists(toTable)

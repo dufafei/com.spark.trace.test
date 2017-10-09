@@ -9,6 +9,11 @@ import kafka.utils.{Json, ZkUtils}
   */
 object test {
 
-
+  def getSplitKeys(partition:Int): Unit ={
+    val s=new Array[Array[Byte]](partition-1)
+   for(i <- 1 until partition){
+      s(i-1)=Array(i.toByte)
+   }
+  }
 
 }

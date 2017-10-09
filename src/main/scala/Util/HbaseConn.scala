@@ -22,8 +22,8 @@ object HbaseConn{
     val conf = HBaseConfiguration.create()
     conf.addResource("hbase-site.xml")
     conf.set("hbase.zookeeper.quorum",  server)
-    conf.set("hbase.zookeeper.property.clientPort", port)
-    ConnectionFactory.createConnection(conf)
+    conf.set("hbase.zookeeper.master", "192.168.132.104")
+     ConnectionFactory.createConnection(conf)
   }
   def getAdmin():Admin ={
     getConnection().getAdmin
