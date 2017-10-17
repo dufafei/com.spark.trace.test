@@ -13,6 +13,8 @@ class BaseDataTrace(tracelog: Tracelog) extends Serializable{
   //TODO http://blog.csdn.net/cuipengfei1/article/details/40475201
 
   def getProductID: Option[Int] ={
+
+
     UrlMatch.productpageMatch.toStream.map(x => {
         url  match {
         case x(url) => Some(url.toInt)

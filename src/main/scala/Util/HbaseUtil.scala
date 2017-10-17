@@ -3,6 +3,7 @@ package Util
 import Init.Pattern
 import org.apache.hadoop.hbase._
 import org.apache.hadoop.hbase.client._
+import org.apache.hadoop.hbase.io.compress.Compression.Algorithm
 import org.apache.log4j.{Level, Logger}
 /**
   *
@@ -47,6 +48,8 @@ object HbaseUtil extends Pattern{
        familyName.indices.map(x => {
          val family=new HColumnDescriptor(familyName(x))
          tableDesc.addFamily(family)
+         //开启压缩
+         family.setCompressionType(Algorithm.SNAPPY)
        })
        x.createTable(tableDesc,getSplitKeys(partition))
        println(s"创建表：${tableName}成功")
@@ -62,7 +65,7 @@ object HbaseUtil extends Pattern{
   def getSplitKeys(partition:Int) ={
     val splitKeys=new Array[Array[Byte]](partition-1)
     for(i <- 1 until partition){
-     splitKeys(i-1)=Array(i.toByte)
+     splitKeys(i-1)=String.format("%x",i).getBytes
     }
        splitKeys
   }
@@ -87,6 +90,7 @@ object HbaseUtil extends Pattern{
         val table=x.getTable(toTable)
         val put=new Put(rowKey.getBytes(this.hbaseEncode))
         put.addColumn(familyName.getBytes,columnName.getBytes(),value.getBytes())
+        table.setWriteBufferSize(6 * 1024 * 1024)
         table.put(put)
       }
       else
@@ -150,7 +154,6 @@ object HbaseUtil extends Pattern{
     })
   }
   //获取多行-scan
-
   def getLines(tableName:String,startRow:String,endRow:String) ={
     //获得T开头的用户
    //val scan=new Scan("T".getBytes,"u".getBytes)
@@ -170,4 +173,5 @@ object HbaseUtil extends Pattern{
         logger.warn("table is not exists")
     })
   }
+  //过滤器
 }

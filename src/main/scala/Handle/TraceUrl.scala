@@ -3,7 +3,6 @@ package Handle
 import java.net.URLDecoder
 
 class TraceUrl(context: String) extends Serializable{
-
   def getParameter:Map[String,String] = {
     if(context.isEmpty) Map[String,String]()
     else context.split("&")

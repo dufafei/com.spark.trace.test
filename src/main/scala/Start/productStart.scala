@@ -37,7 +37,6 @@ object productStart {
            .map(b => b._1 -> b._2.map(c => c._2).toList.mkString(","))
               .sortBy(d => d._2.length)
          //true升序，false降序，第三个参数代表排序后分区的个数
-
         //val result=productInfo.saveAsTextFile("/home/hadoop/test/result")
         productInfo.foreachPartition(data => ToMysql.myfun(data))
         init.context.stop()

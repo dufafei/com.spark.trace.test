@@ -4,6 +4,6 @@ import Util.HbaseUtil
 
 object HbaseTest {
   def main(args: Array[String]): Unit = {
-    HbaseUtil.createTable("test4",Array("column1","column2"),4)
+    HbaseUtil.createTable("bulktest",Array("family"),2)
   }
 }

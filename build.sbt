@@ -21,8 +21,10 @@ libraryDependencies ++= Seq(
    "joda-time" % "joda-time" % "2.9.3" % "provided",
    "org.joda" % "joda-convert" % "1.8.1" % "provided",
    "org.elasticsearch" % "elasticsearch-spark_2.10" % "2.4.4",
+   "org.scalatest" % "scalatest_2.10" % "3.0.0-M16-SNAP6",
+   "org.mongodb.spark" % "mongo-spark-connector_2.10" % "2.2.0",
    "redis.clients" % "jedis" % "2.6.2"
-    )map( _.excludeAll(ExclusionRule(organization = "org.mortbay.jetty")) )
+    ).map( _.excludeAll(ExclusionRule(organization = "org.mortbay.jetty")) )
 
 packAutoSettings
 
