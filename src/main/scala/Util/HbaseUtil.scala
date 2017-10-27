@@ -65,7 +65,7 @@ object HbaseUtil extends Pattern{
   def getSplitKeys(partition:Int) ={
     val splitKeys=new Array[Array[Byte]](partition-1)
     for(i <- 1 until partition){
-     splitKeys(i-1)=String.format("%x",i).getBytes
+     splitKeys(i-1)=String.format("%x",i.toString).getBytes
     }
        splitKeys
   }

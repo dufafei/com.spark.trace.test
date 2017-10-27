@@ -49,9 +49,6 @@ public class BulkLoad {
         Table table=conn.getTable(tableName);
         RegionLocator regionLocator=conn.getRegionLocator(tableName);
         HFileOutputFormat2.configureIncrementalLoad(job,table,regionLocator);
-        //导入hbase表
-        LoadIncrementalHFiles loader = new LoadIncrementalHFiles(conf);
-        loader.doBulkLoad(new Path(""), new HTable(conf,TableName.valueOf("table")));
         System.exit(job.waitForCompletion(true)?0:1);
     }
 }
