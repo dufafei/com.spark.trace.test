@@ -28,7 +28,7 @@ object writeKafka {
 
     class sendToData() extends Runnable{
       override def run() = {
-        val localfile=Source.fromFile("./20170410.log")
+        val localfile=Source.fromFile("./steaming.text")
         var number=0
         for(line <- localfile.getLines()){
           val message = new KeyedMessage[String, String](topic, line)

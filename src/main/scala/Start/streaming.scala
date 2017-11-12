@@ -18,18 +18,11 @@ object streaming {
     val init = new {
       val application = "streaming"
     } with SparkInit
-
     val ssc = new StreamingContext(init.context, Seconds(5))
 
     val topic = Set("log")
-    val columnNames = List(
-      "trackid",
-      "productID",
-      "time",
-      "hites")
 
     def batchSave(rdd: RDD[String]):Unit = {
-
       rdd.foreach(println)
      /* rdd.map(x => {
         val tracelog=Tracelog(x).get
@@ -42,7 +35,6 @@ object streaming {
             (x._1.trackid,x._1.productID,x._1.servertime,x._2).toString()
           })
         .collect().foreach(println)*/
-
     }
     new DirectStream().createDirectStream(ssc, KafkaProperties.kafkaParmter, topic, batchSave)
     ssc.start()

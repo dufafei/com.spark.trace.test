@@ -10,6 +10,7 @@ import org.apache.spark.SparkContext
  class  LogPath(path: casePath,sc: SparkContext) extends Serializable{
    val logpath: String = getPath.mkString(",")
    def getPath: IndexedSeq[String] = {
+     //DateTime.parse(DateTime.now.toString("yyyyMMdd")+" 00:00:00")
    val startTime: DateTime = DateTime.parse(path.startTime,DateTimeFormat.forPattern("yyyyMMdd"))
    val endTime: DateTime = startTime.plusDays(path.interval)
    (0 to Days.daysBetween(startTime, endTime).getDays).map(x => {

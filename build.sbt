@@ -7,7 +7,7 @@ scalaVersion := "2.10.4"
 // http://mvnrepository.com/artifact/org.apache.spark/spark-core_2.10
 
 libraryDependencies ++= Seq(
-   "org.apache.spark" % "spark-core_2.10" % "1.5.2" % "provided" ,
+   "org.apache.spark" % "spark-core_2.10" % "1.5.2" ,
    "org.apache.spark" % "spark-streaming_2.10" % "1.5.2",
    "org.apache.spark" % "spark-streaming-kafka_2.10" % "1.5.2" ,
    "org.apache.spark" % "spark-sql_2.10" % "1.5.2" ,
@@ -24,7 +24,17 @@ libraryDependencies ++= Seq(
    "org.scalatest" % "scalatest_2.10" % "3.0.0-M16-SNAP6",
    "org.mongodb.spark" % "mongo-spark-connector_2.10" % "2.2.0",
    "redis.clients" % "jedis" % "2.6.2"
-    ).map( _.excludeAll(ExclusionRule(organization = "org.mortbay.jetty")) )
-
-packAutoSettings
+    ).map( _.exclude("org.mortbay.jetty", "servlet-api").
+  exclude("commons-beanutils", "commons-beanutils-core").
+  exclude("commons-collections", "commons-collections").
+  exclude("commons-collections", "commons-collections").
+  exclude("com.esotericsoftware.minlog", "minlog").
+  exclude("org.slf4j", "jcl-over-slf4j").
+  excludeAll(
+     ExclusionRule(organization = "org.eclipse.jetty.orbit")
+  ))
+    //打包时，排除scala类库
+   assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+    //pack插件打包
+   packAutoSettings
 
